@@ -1,0 +1,24 @@
+{
+  "name": "assurmoi",
+  "version": "1.0.0",
+  "description": "",
+  "homepage": "https://github.com/websocietyfr/supDeVinciM2Dev2026-env#readme",
+  "bugs": {
+    "url": "https://github.com/websocietyfr/supDeVinciM2Dev2026-env/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/websocietyfr/supDeVinciM2Dev2026-env.git"
+  },
+  "license": "ISC",
+  "author": "Marius Bourse",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon index.js"
+  },
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}
