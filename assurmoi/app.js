@@ -5,6 +5,23 @@ const cors = require("cors");
 const { body, validationResult } = require("express-validator");
 const initRoutes = require("./routes");
 
+const swaggerUi = require("swagger-ui-express");
+const swaggerJsdoc = require("swagger-jsdoc");
+
+const swaggerOptions = {
+  definition: {
+    openapi: "3.0.0",
+    info: {
+      title: "AssurMoi API",
+      version: "1.0.0",
+      description: "API for Insurance Management System translated to English",
+    },
+  },
+  apis: ["./routes/*.js"],
+};
+
+const swaggerSpec = swaggerJsdoc(swaggerOptions);
+
 const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
@@ -14,6 +31,8 @@ app.use(
     origin: ["http://exemple.com", "*"],
   }),
 );
+
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 initRoutes(app);
 

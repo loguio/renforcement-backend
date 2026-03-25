@@ -1,19 +1,22 @@
-const { checkSchema } = require("express-validator");
+const { checkSchema, validationResult } = require("express-validator");
 
-async function validateUsername(req, res, next) {
-  const [hasError] = await checkSchema({
-    username: {
-      notEmpty: true,
-    },
+async function validateUserCreation(req, res, next) {
+  await checkSchema({
+    email: { notEmpty: true, isEmail: true },
+    password_hash: { notEmpty: true },
+    role: { notEmpty: true }
   }).run(req);
-  if (hasError.isEmpty()) {
-    return next();
+
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({
+      message: "Missing required user fields",
+      errors: errors.array()
+    });
   }
-  res.status(403).json({
-    message: "Missing username",
-  });
+  next();
 }
 
 module.exports = {
-  validateUsername,
+  validateUserCreation,
 };

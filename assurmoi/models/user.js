@@ -1,33 +1,63 @@
-const { Model, DataTypes, Sequelize } = require("sequelize");
-const User = (dbInstance, DataTypes) => {
+const { Model, DataTypes } = require("sequelize");
+
+const User = (dbInstance) => {
   class User extends Model {}
 
   User.init(
     {
-      username: {
-        type: DataTypes.STRING(50),
-        allowNull: false,
+      id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
       },
-      password: {
+      email: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true,
+      },
+      password_hash: {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      firstname: {
-        type: DataTypes.STRING(50),
+      refresh_token: {
+        type: DataTypes.TEXT,
         allowNull: true,
       },
-      lastname: {
-        type: DataTypes.STRING(50),
+      two_step_code: {
+        type: DataTypes.STRING,
         allowNull: true,
       },
-      email: DataTypes.STRING,
+      role: {
+        type: DataTypes.ENUM(
+          "Admin",
+          "PortfolioManager",
+          "TrackingOfficer",
+          "CustomerCare",
+          "Insured"
+        ),
+        allowNull: false,
+      },
+      is_active: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: true,
+      },
+      phone: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        comment: "Utilisé pour authentification 2FA SMS",
+      },
     },
     {
       sequelize: dbInstance,
       modelName: "User",
-      timestamps: false,
-    },
+      tableName: "Users",
+      timestamps: true,
+      createdAt: 'created_at',
+      updatedAt: false,
+    }
   );
+
   return User;
 };
 
