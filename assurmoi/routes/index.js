@@ -4,14 +4,18 @@ const claimRoutes = require("./claim");
 const documentRoutes = require("./document");
 const dossierRoutes = require("./dossier");
 const actionHistoryRoutes = require("./actionHistory");
+const authRoutes = require("./auth");
+const { verifyToken } = require("../middlewares/auth");
 
 function initRoutes(app) {
-  app.use("/user", userRoutes);
-  app.use("/insured", insuredRoutes);
-  app.use("/claim", claimRoutes);
-  app.use("/document", documentRoutes);
-  app.use("/dossier", dossierRoutes);
-  app.use("/action-history", actionHistoryRoutes);
+  app.use("/auth", authRoutes); // Public route
+  
+  app.use("/user", verifyToken, userRoutes);
+  app.use("/insured", verifyToken, insuredRoutes);
+  app.use("/claim", verifyToken, claimRoutes);
+  app.use("/document", verifyToken, documentRoutes);
+  app.use("/dossier", verifyToken, dossierRoutes);
+  app.use("/action-history", verifyToken, actionHistoryRoutes);
 
   app.get(
     "/",

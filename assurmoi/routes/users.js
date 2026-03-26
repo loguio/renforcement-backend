@@ -31,7 +31,7 @@ const {
  *             properties:
  *               email:
  *                 type: string
- *               password_hash:
+ *               password:
  *                 type: string
  *               role:
  *                 type: string

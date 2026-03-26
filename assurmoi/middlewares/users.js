@@ -3,7 +3,7 @@ const { checkSchema, validationResult } = require("express-validator");
 async function validateUserCreation(req, res, next) {
   await checkSchema({
     email: { notEmpty: true, isEmail: true },
-    password_hash: { notEmpty: true },
+    password: { notEmpty: true },
     role: { notEmpty: true }
   }).run(req);
 

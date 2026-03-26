@@ -14,8 +14,27 @@ const swaggerOptions = {
     info: {
       title: "AssurMoi API",
       version: "1.0.0",
-      description: "API for Insurance Management System translated to English",
+      description: "API documentation for the backend of AssurMoi application",
     },
+    servers: [
+      {
+        url: "http://localhost:3000",
+      },
+    ],
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: "http",
+          scheme: "bearer",
+          bearerFormat: "JWT"
+        }
+      }
+    },
+    security: [
+      {
+        bearerAuth: []
+      }
+    ]
   },
   apis: ["./routes/*.js"],
 };

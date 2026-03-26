@@ -1,5 +1,6 @@
 const { User, dbInstance } = require("../models");
 const { Op } = require("sequelize");
+const bcrypt = require("bcrypt");
 
 const getAllUsers = async (req, res) => {
   let queryParam = {};
@@ -26,7 +27,10 @@ const getUser = async (req, res) => {
 const createUser = async (req, res) => {
   const transaction = await dbInstance.transaction();
   try {
-    const { email, password_hash, refresh_token, two_step_code, role, is_active, phone } = req.body;
+    const { email, password, refresh_token, two_step_code, role, is_active, phone } = req.body;
+    const salt = await bcrypt.genSalt(10);
+    const password_hash = await bcrypt.hash(password, salt);
+    
     const user = await User.create(
       { email, password_hash, refresh_token, two_step_code, role, is_active, phone },
       { transaction },

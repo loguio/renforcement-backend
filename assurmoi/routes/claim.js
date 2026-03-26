@@ -1,6 +1,6 @@
-const express = require("express");
 const router = express.Router();
 const { Claim } = require("../models");
+const { requireRoles } = require("../middlewares/auth");
 
 /**
  * @swagger
@@ -91,8 +91,17 @@ router.get("/:id", async (req, res) => {
  *       201:
  *         description: The created claim.
  */
-router.post("/", async (req, res) => {
+router.post("/", requireRoles(["Gestionnaire_Portefeuille", "Charge_Clientele"]), async (req, res) => {
   try {
+    let { responsibility_percentage } = req.body;
+    
+    // Automatically enforce 0, 50, 100 bounds according to business rule
+    if (responsibility_percentage !== 100 && responsibility_percentage !== 50) {
+      req.body.responsibility_percentage = 0;
+    }
+
+    req.body.creator_id = req.user.id; // Assign creator automatically
+    
     const claim = await Claim.create(req.body);
     res.status(201).json(claim);
   } catch (err) {
@@ -124,7 +133,7 @@ router.post("/", async (req, res) => {
  *       404:
  *         description: Claim not found.
  */
-router.put("/:id", async (req, res) => {
+router.put("/:id", requireRoles(["Gestionnaire_Portefeuille", "Charge_Clientele"]), async (req, res) => {
   try {
     const [updated] = await Claim.update(req.body, {
       where: { id: req.params.id },
@@ -155,7 +164,7 @@ router.put("/:id", async (req, res) => {
  *       404:
  *         description: Claim not found.
  */
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", requireRoles(["Administrateur"]), async (req, res) => {
   try {
     const deleted = await Claim.destroy({
       where: { id: req.params.id },

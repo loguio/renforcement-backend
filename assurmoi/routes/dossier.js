@@ -1,6 +1,50 @@
-const express = require("express");
 const router = express.Router();
-const { Dossier } = require("../models");
+const { Dossier, Claim } = require("../models");
+const { requireRoles } = require("../middlewares/auth");
+
+const computeDossierStep = async (dossier) => {
+  if (!dossier.date_expertise_planifiee) return "Dossier initialisé / Demande d'expertise en attente";
+  if (!dossier.date_expertise_effective) return "Expertise planifiée";
+  if (!dossier.date_retour_expertise) return "Expertise réalisée, attente de retour d'expert";
+  
+  if (dossier.scenario === "RepairableVehicle") {
+    if (!dossier.date_intervention_planifiee) return "Véhicule réparable, intervention à planifier";
+    if (!dossier.date_prise_en_charge_planifiee) return "Intervention planifiée, prise en charge en attente";
+    if (!dossier.date_prise_en_charge_effective) return "Prise en charge du véhicule planifiée";
+    if (!dossier.date_debut_intervention) return "Prise en charge réalisée";
+    if (!dossier.date_fin_intervention) return "Intervention en cours sur le véhicule";
+    if (!dossier.date_restitution_planifiee) return "Livraison du véhicule, restitution à planifier";
+    if (!dossier.date_restitution_effective) return "Véhicule en cours de restitution";
+    if (!dossier.date_reception_facture) return "Véhicule restitué, en attente de facturation";
+    if (!dossier.date_reglement) return "Facture reçue, en attente de règlement";
+    
+    // Check responsability factor
+    const claim = await Claim.findByPk(dossier.claim_id);
+    if (!claim) return `Règlement réalisé. (Erreur Sinistre introuvable)`;
+    if (claim.responsibility_percentage === 100) return "Dossier clos (100% responsable)";
+    if (!dossier.facture_reglee_assurance_tiers) return "Règlement réalisé, en attente refacturation assurance tiers";
+    
+    return "Dossier clos";
+  }
+  
+  if (dossier.scenario === "WreckedVehicle") {
+    if (!dossier.montant_estimation_indemnisation) return "Véhicule épave, estimation indemnisation à faire";
+    if (dossier.approbation_client === null) return "Estimation communiquée, en attente d'approbation";
+    if (!dossier.date_previsionnelle_prise_en_charge) return "Estimation acceptée, prise en charge en attente (RIB nécessaire)";
+    if (!dossier.date_prise_en_charge_effective) return "Prise en charge du véhicule planifiée";
+    if (!dossier.date_indemnisation) return "Prise en charge réalisée, indemnisation en attente de règlement";
+    
+    // Check responsability factor
+    const claim = await Claim.findByPk(dossier.claim_id);
+    if (!claim) return `Règlement réalisé. (Erreur Sinistre introuvable)`;
+    if (claim.responsibility_percentage === 100) return "Dossier clos (100% responsable)";
+    if (!dossier.facture_reglee_assurance_tiers) return "Règlement réalisé, en attente refacturation assurance tiers";
+    
+    return "Dossier clos";
+  }
+  
+  return "Scénario non défini - En attente diagnostic";
+};
 
 /**
  * @swagger
@@ -22,7 +66,14 @@ const { Dossier } = require("../models");
 router.get("/", async (req, res) => {
   try {
     const dossiers = await Dossier.findAll();
-    res.json(dossiers);
+    const enrichedDossiers = await Promise.all(
+      dossiers.map(async (d) => {
+        const json = d.toJSON();
+        json.computed_step = await computeDossierStep(d);
+        return json;
+      })
+    );
+    res.json(enrichedDossiers);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -50,7 +101,11 @@ router.get("/:id", async (req, res) => {
   try {
     const dossier = await Dossier.findByPk(req.params.id);
     if (!dossier) return res.status(404).json({ error: "Dossier not found" });
-    res.json(dossier);
+    
+    const json = dossier.toJSON();
+    json.computed_step = await computeDossierStep(dossier);
+    
+    res.json(json);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -82,7 +137,7 @@ router.get("/:id", async (req, res) => {
  *       201:
  *         description: The created dossier.
  */
-router.post("/", async (req, res) => {
+router.post("/", requireRoles(["Gestionnaire_Portefeuille"]), async (req, res) => {
   try {
     const dossier = await Dossier.create(req.body);
     res.status(201).json(dossier);
@@ -115,7 +170,7 @@ router.post("/", async (req, res) => {
  *       404:
  *         description: Dossier not found.
  */
-router.put("/:id", async (req, res) => {
+router.put("/:id", requireRoles(["Gestionnaire_Portefeuille", "Charge_Suivi", "Administrateur"]), async (req, res) => {
   try {
     const [updated] = await Dossier.update(req.body, {
       where: { id: req.params.id },
@@ -146,7 +201,7 @@ router.put("/:id", async (req, res) => {
  *       404:
  *         description: Dossier not found.
  */
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", requireRoles(["Administrateur"]), async (req, res) => {
   try {
     const deleted = await Dossier.destroy({
       where: { id: req.params.id },
