@@ -1,37 +1,23 @@
-import React, {
-  createContext,
-  ReactNode,
-  useContext,
-  useMemo,
-  useState,
-} from "react";
-
-type User = {
-  username: string;
-  firstname: string;
-  lastName: string;
-  email: string;
-};
+import { createContext, useContext, useState } from "react";
 
 type UserContextValue = {
-  user: User | null;
-  setUser: React.Dispatch<React.SetStateAction<User | null>>;
+  user: any;
+  setUser: any;
 };
 
-const UserContext = createContext<UserContextValue | undefined>(undefined);
+export const UserContext = createContext<UserContextValue>({
+  user: {},
+  setUser: () => {},
+});
 
-export function UserProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
+export const UserProvider = ({ children }: { children?: any }): any => {
+  const [user, setUser] = useState(undefined);
 
-  const value = useMemo(() => ({ user, setUser }), [user]);
+  return (
+    <UserContext.Provider value={{ user, setUser }}>
+      {children}
+    </UserContext.Provider>
+  );
+};
 
-  return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
-}
-
-export function useCurrentUser() {
-  const context = useContext(UserContext);
-  if (!context) {
-    throw new Error("useUser must be used within a UserProvider");
-  }
-  return context;
-}
+export const useCurrentUser = () => useContext(UserContext);
