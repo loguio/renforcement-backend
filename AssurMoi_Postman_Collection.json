@@ -1,0 +1,762 @@
+{
+  "info": {
+    "name": "AssurMoi API",
+    "description": "Functional Postman collection for testing the AssurMoi backend with RBAC, State Machine & JWT Authentication.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.token) {",
+                  "    pm.collectionVariables.set(\"token\", jsonData.token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@assurmoi.fr\",\n  \"password\": \"admin\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "User",
+      "item": [
+        {
+          "name": "Get all Users",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/user",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "user"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"employee@assurmoi.fr\",\n  \"password\": \"secret_password\",\n  \"role\": \"Gestionnaire_Portefeuille\",\n  \"is_active\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/user",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "user"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get User by ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/user/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "user",
+                "1"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update User (Advance Step)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"updated_employee@assurmoi.fr\",\n  \"role\": \"Administrateur\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/user/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "user",
+                "1"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete User",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/user/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "user",
+                "1"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Insured",
+      "item": [
+        {
+          "name": "Get all Insureds",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/insured",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "insured"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Insured",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"first_name\": \"Jean\",\n  \"last_name\": \"Dupont\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/insured",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "insured"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Insured by ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/insured/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "insured",
+                "1"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Insured (Advance Step)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"first_name\": \"Jean-Pierre\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/insured/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "insured",
+                "1"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Insured",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/insured/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "insured",
+                "1"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Claim (Sinistre)",
+      "item": [
+        {
+          "name": "Get all Claim (Sinistre)s",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/claim",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "claim"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Claim (Sinistre)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reference\": \"SIN-2026-001\",\n  \"insured_id\": 1,\n  \"vehicle_registration\": \"AB-123-CD\",\n  \"driver_last_name\": \"Dupont\",\n  \"driver_first_name\": \"Jean\",\n  \"driver_is_insured\": true,\n  \"call_datetime\": \"2026-03-25T10:00:00Z\",\n  \"claim_datetime\": \"2026-03-25T09:00:00Z\",\n  \"responsibility_percentage\": 50,\n  \"manager_validation\": false,\n  \"status\": \"Draft\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/claim",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "claim"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Claim (Sinistre) by ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/claim/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "claim",
+                "1"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Claim (Sinistre) (Advance Step)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"manager_validation\": true,\n  \"status\": \"PendingValidation\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/claim/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "claim",
+                "1"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Claim (Sinistre)",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/claim/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "claim",
+                "1"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Dossier",
+      "item": [
+        {
+          "name": "Get all Dossiers",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/dossier",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "dossier"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Dossier",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"dossier_number\": \"DOS-2026-001\",\n  \"claim_id\": 1,\n  \"tracking_officer_id\": 1,\n  \"scenario\": \"RepairableVehicle\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/dossier",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "dossier"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Dossier by ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/dossier/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "dossier",
+                "1"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Dossier (Advance Step)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"date_intervention_planifiee\": \"2026-04-01\",\n  \"date_prise_en_charge_planifiee\": \"2026-04-02T08:00:00Z\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/dossier/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "dossier",
+                "1"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Dossier",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/dossier/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "dossier",
+                "1"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Document",
+      "item": [
+        {
+          "name": "Get all Documents",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/document",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "document"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Document",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"claim_id\": 1,\n  \"type\": \"Carte_Grise\",\n  \"file_url\": \"https://s3.example.com/carte.pdf\",\n  \"validated_by_manager\": false\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/document",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "document"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Document by ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/document/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "document",
+                "1"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Document (Advance Step)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"validated_by_manager\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/document/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "document",
+                "1"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Document",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/document/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "document",
+                "1"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "ActionHistory",
+      "item": [
+        {
+          "name": "Get all ActionHistorys",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/action-history",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "action-history"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create ActionHistory",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"claim_id\": 1,\n  \"action\": \"Claim Created\",\n  \"details\": \"Initial claim submission by insured.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/action-history",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "action-history"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get ActionHistory by ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/action-history/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "action-history",
+                "1"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update ActionHistory (Advance Step)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"action\": \"Claim Updated\",\n  \"details\": \"Added responsibility details.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/action-history/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "action-history",
+                "1"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete ActionHistory",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/action-history/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "action-history",
+                "1"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
