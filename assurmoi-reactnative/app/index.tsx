@@ -7,8 +7,8 @@ import fetchData from "@/hooks/fetchData";
 
 type SinistreType = {
   id: number | string,
-  plate?: string,
-  sinister_datetime?: any,
+  vehicle_registration?: string,
+  claim_datetime?: any,
   context?: string
 }
 
@@ -19,10 +19,10 @@ export default function Index() {
   const { user } = useContext(UserContext);
 
   useEffect(() => {
-    fetchData('/sinistres', 'GET', {}, true)
+    fetchData('/claim', 'GET', {}, true)
       .then(data => {
-        const { sinistres } = data
-        setSinistres(sinistres)
+        // data is the array itself
+        setSinistres(data)
       })
       .catch(err => {
         console.log('Erreur '+err.message)
@@ -44,8 +44,8 @@ export default function Index() {
           >
             <Card.Title title={"Sinistre n°"+sinistre.id} subtitle={sinistre.context} />
             <Card.Content>
-              <Text variant="titleLarge">Véhicule : {sinistre.plate}</Text>
-              <Text variant="bodyMedium">Soumis le : {sinistre.sinister_datetime}</Text>
+              <Text variant="titleLarge">Véhicule : {sinistre.vehicle_registration}</Text>
+              <Text variant="bodyMedium">Soumis le : {sinistre.claim_datetime}</Text>
             </Card.Content>
             <Card.Actions>
               <Button

@@ -44,6 +44,7 @@ const swaggerSpec = swaggerJsdoc(swaggerOptions);
 const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
+app.use("/uploads", express.static("uploads"));
 app.use(
   cors({
     credentials: true,

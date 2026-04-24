@@ -7,13 +7,13 @@ import * as DocumentPicker from 'expo-document-picker';
 
 type SinistreType = {
   id: number | string,
-  plate?: string,
-  sinister_datetime?: any,
+  vehicle_registration?: string,
+  claim_datetime?: any,
   context?: string,
-  driver_firstname?: string,
-  driver_lastname?: string,
+  driver_first_name?: string,
+  driver_last_name?: string,
   call_datetime?: any,
-  driver_responsability: boolean
+  responsibility_percentage?: number
 }
 
 export default function SinistreDetailScreen() {
@@ -59,7 +59,9 @@ export default function SinistreDetailScreen() {
                 } as unknown as Blob)
             }
             setError(null);
-            fetchDocument('/sinistres/'+id+'/document', 'POST', formData, true)
+            formData.append("claim_id", id as string);
+            formData.append("type", "Other");
+            fetchDocument('/document/upload', 'POST', formData, true)
                 .then(response => console.log(response))
                 .catch(error => {
                     console.log(error),
@@ -72,10 +74,9 @@ export default function SinistreDetailScreen() {
 
     // fetch récupérer le sinistre courant
     useEffect(() => {
-        fetchData('/sinistres/'+id, 'GET', {}, true)
+        fetchData('/claim/'+id, 'GET', {}, true)
             .then(data => {
-                const { sinistre } = data;
-                setSinistre(sinistre)
+                setSinistre(data)
             })
             .catch(err => {
                 console.log('Error on get sinistre ' + err.message)
@@ -97,17 +98,13 @@ export default function SinistreDetailScreen() {
             >
                 <Card.Title title="Mon sinistre" />
                 <Card.Content>
-                    <Text>Plaque : {sinistre.plate}</Text>
-                    <Text>Date du sinistre : {sinistre.sinister_datetime}</Text>
+                    <Text>Plaque : {sinistre.vehicle_registration}</Text>
+                    <Text>Date du sinistre : {sinistre.claim_datetime}</Text>
                     <Text>Date de signalement du sinistre : {sinistre.call_datetime}</Text>
-                    <Text>Nom du conducteur : {sinistre.driver_lastname}</Text>
-                    <Text>Prénom du conducteur : {sinistre.driver_firstname}</Text>
+                    <Text>Nom du conducteur : {sinistre.driver_last_name}</Text>
+                    <Text>Prénom du conducteur : {sinistre.driver_first_name}</Text>
                     <Text>Contexte du sinistre : {sinistre.context}</Text>
-                    <Text>Responsabilité conducteur : </Text>
-                    <Switch
-                        disabled
-                        value={sinistre.driver_responsability}
-                    />
+                    <Text>Responsabilité conducteur : {sinistre.responsibility_percentage}%</Text>
                 </Card.Content>
             </Card>
 
@@ -125,7 +122,7 @@ export default function SinistreDetailScreen() {
                         Fichier : ...
                     </Button>
                     <HelperText type="error" visible={Boolean(error)}>
-                        {error}
+                        {error || ' '}
                     </HelperText>
                     <Button onPress={submitForm}>Envoyer le document</Button>
                 </Card.Content>

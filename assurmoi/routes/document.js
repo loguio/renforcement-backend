@@ -1,6 +1,20 @@
 const express = require("express");
 const router = express.Router();
+const multer = require("multer");
+const path = require("path");
 const { Document } = require("../models");
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'uploads/')
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
+    cb(null, uniqueSuffix + path.extname(file.originalname))
+  }
+})
+
+const upload = multer({ storage: storage })
 
 /**
  * @swagger
@@ -85,6 +99,45 @@ router.get("/:id", async (req, res) => {
 router.post("/", async (req, res) => {
   try {
     const doc = await Document.create(req.body);
+    res.status(201).json(doc);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+/**
+ * @swagger
+ * /document/upload:
+ *   post:
+ *     summary: Upload a document file
+ *     tags: [Document]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               file:
+ *                 type: string
+ *                 format: binary
+ *               claim_id:
+ *                 type: integer
+ *               type:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: The uploaded document.
+ */
+router.post("/upload", upload.single('file'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: "No file provided" });
+    }
+    const file_url = "/uploads/" + req.file.filename;
+    const body = { ...req.body, file_url };
+    
+    const doc = await Document.create(body);
     res.status(201).json(doc);
   } catch (err) {
     res.status(400).json({ error: err.message });

@@ -7,8 +7,7 @@ type Headers = {
     Authorization?: string
 }
 
-const API_BASE_URL_CONST = 'http://localhost:3000';
-// const API_BASE_URL_CONST = process.env.API_BASE_URL;
+const API_BASE_URL_CONST = process.env.EXPO_PUBLIC_API_URL || 'http://10.0.2.2:3000';
 
 export default async function fetchData(path: string, method: string, body?: object, useToken?: boolean) {
     const token = await AsyncStorage.getItem('token');

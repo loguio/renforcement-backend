@@ -12,7 +12,7 @@ type JwtPayload = {
 }
 
 export default function LoginScreen() {
-    const [username, setUsername] = useState('')
+    const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [error, setError] = useState<string | null>(null);
     const { setUser } = useContext(UserContext);
@@ -20,7 +20,7 @@ export default function LoginScreen() {
 
     const login = async () => {
         try {
-            const { token } = await fetchData('/login', 'POST', { username, password }, false)
+            const { token } = await fetchData('/auth/login', 'POST', { email, password }, false)
             // const response = await fetch('http://localhost:3000/login', {
             //     method: "POST",
             //     headers: { "Content-type": "application/json" },
@@ -51,7 +51,7 @@ export default function LoginScreen() {
                     <Text>Connexion</Text>
                     <TextInput
                         label="Identifiant"
-                        onChangeText={setUsername}
+                        onChangeText={setEmail}
                     />
                     <TextInput
                         label="Mot de passe"
@@ -59,7 +59,7 @@ export default function LoginScreen() {
                         onChangeText={setPassword}
                     />
                     <HelperText type="error" visible={Boolean(error)}>
-                        {error}
+                        {error || ' '}
                     </HelperText>
                     <Button
                         mode="contained"
